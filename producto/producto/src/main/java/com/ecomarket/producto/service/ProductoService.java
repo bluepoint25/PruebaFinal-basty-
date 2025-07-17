@@ -14,8 +14,11 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
 
-    public Producto crearProducto(Producto producto) {
-        return productoRepository.save(producto);
+    public Producto crearProducto(Producto nuevoProducto) {
+            if (productoRepository.findByNombre(nuevoProducto.getNombre()).isPresent()) {
+                throw new RuntimeException("El nombre del producto ya está en uso");
+            }
+            return productoRepository.save(nuevoProducto);
     }
 
     public Optional<Producto> obtenerProductoPorId(Long id) {
@@ -38,9 +41,11 @@ public class ProductoService {
     }
 
     public void eliminarProducto(Long id) {
+        if (!productoRepository.existsById(id)) {
+            throw new RuntimeException("Producto no encontrado");
+        }
         productoRepository.deleteById(id);
     }
-
     public List<Producto> buscarPorNombre(String nombre) {
         return productoRepository.findByNombreContainingIgnoreCase(nombre);
     }

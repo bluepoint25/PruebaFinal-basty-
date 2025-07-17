@@ -4,6 +4,8 @@ import com.ecomarket.producto.model.Producto;
 import com.ecomarket.producto.service.ProductoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +19,14 @@ public class ProductoController {
     private final ProductoService productoService;
 
     @PostMapping
-    public ResponseEntity<Producto> crearProducto(@Valid @RequestBody Producto producto) {
-        Producto creado = productoService.crearProducto(producto);
-        return ResponseEntity.ok(creado);
+    public ResponseEntity<?> crearProducto(@RequestBody Producto producto) {
+        try {
+            Producto creado = productoService.crearProducto(producto);
+            return ResponseEntity.ok(creado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body("El producto no pudo ser creado: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
@@ -44,9 +51,14 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
-        productoService.eliminarProducto(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> eliminarProducto(@PathVariable Long id) {
+        try {
+            productoService.eliminarProducto(id);
+            return ResponseEntity.ok("El producto con ID " + id + " se eliminó correctamente.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body("No se encontró el producto con ID " + id);
+        }
     }
 
     @GetMapping("/buscar")

@@ -4,6 +4,8 @@ import com.ecomarket.usuario.model.Usuario;
 import com.ecomarket.usuario.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,11 +19,15 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<Usuario> crearUsuario(@Valid @RequestBody Usuario usuario) {
-        Usuario creado = usuarioService.crearUsuario(usuario);
-        return ResponseEntity.ok(creado);
+    public ResponseEntity<?> crearUsuario(@Valid @RequestBody Usuario usuario) {
+        try {
+            Usuario creado = usuarioService.crearUsuario(usuario);
+            return ResponseEntity.ok(creado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body("El usuario no pudo ser creado: " + e.getMessage());
+        }
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable Long id) {
         return usuarioService.obtenerUsuarioPorId(id)
