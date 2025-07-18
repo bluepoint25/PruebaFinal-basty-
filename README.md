@@ -31,7 +31,8 @@ Cada microservicio expone APIs REST para realizar operaciones CRUD y está conec
 
 Cada microservicio tiene la siguiente estructura de paquetes:
 
-```
+```cambiazo 11
+
 com.ecomarket.[usuario|producto]
   ├── controller      # Controladores REST
   ├── service         # Lógica de negocio
